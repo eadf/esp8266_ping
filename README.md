@@ -1,4 +1,4 @@
-# esp8266-ping
+# esp8266_ping
 The initial stages of a HC-SR04 library for the esp8266.
 ```
 #include "ping/ping.h"
