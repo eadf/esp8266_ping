@@ -38,6 +38,7 @@
 
 #define ping_micros (0x7FFFFFFF & system_get_time())
 #define PING_TRIGGER_DEFAULT_STATE 1
+#define PING_POLL_PERIOD 100 // 100 us, used when polling interrupt results
 
 static volatile uint32_t   ping_timeStamp0 = 0;
 static volatile bool       ping_echoStarted = false;
@@ -46,12 +47,12 @@ static volatile bool       ping_echoEnded = false;
 
 static uint8_t ping_triggerPin = 255;
 static uint8_t ping_echoPin = 255;
+static bool ping_isInitiated = false;
 
 // forward declarations
 static void ping_disableInterrupt(void);
-static void ping_enableInterrupt(void);
 static void ping_intr_handler(void);
-static bool ping_isInitiated = false;
+
 
 static void
 ping_disableInterrupt(void) {
@@ -75,11 +76,40 @@ ping_intr_handler(void) {
   }
 }
 
+/**
+ * Sends a ping, and returns the number of microseconds it took to receive a response.
+ * Will give up after maxPeriod (with false as return value)
+ */
 bool ICACHE_FLASH_ATTR
 ping_ping(uint32_t maxPeriod, uint32_t* response) {
+  uint32_t timeOutAt = ping_micros + maxPeriod;
   ping_echoEnded = false;
   ping_echoStarted = false;
   ping_timeStamp0 = ping_micros;
+
+  if (!ping_isInitiated) {
+    *response = 0;
+    os_printf("ping_ping: Error: not initiated properly.\n");
+    return false;
+  }
+
+  while (GPIO_INPUT_GET(ping_echoPin)) {
+    if (ping_micros > timeOutAt) {
+      // echo pin never went low, something is wrong
+      os_printf("ping_ping: Error: echo pin permanently high?.\n");
+      *response = ping_micros - ping_timeStamp0;
+
+      // Wake up a sleeping device
+      GPIO_OUTPUT_SET(ping_triggerPin, PING_TRIGGER_DEFAULT_STATE);
+      os_delay_us(50);
+      GPIO_OUTPUT_SET(ping_triggerPin, !PING_TRIGGER_DEFAULT_STATE);
+      os_delay_us(50);
+      GPIO_OUTPUT_SET(ping_triggerPin, PING_TRIGGER_DEFAULT_STATE);
+
+      return false;
+    }
+    os_delay_us(PING_POLL_PERIOD);
+  }
 
   gpio_pin_intr_state_set(GPIO_ID_PIN(ping_echoPin), GPIO_PIN_INTR_POSEDGE);
   GPIO_OUTPUT_SET(ping_triggerPin, !PING_TRIGGER_DEFAULT_STATE);
@@ -87,39 +117,46 @@ ping_ping(uint32_t maxPeriod, uint32_t* response) {
   GPIO_OUTPUT_SET(ping_triggerPin, PING_TRIGGER_DEFAULT_STATE);
 
   while (!ping_echoEnded) {
-    if (ping_micros - ping_timeStamp0 > maxPeriod) {
+    if (ping_micros > timeOutAt) {
       *response = ping_micros - ping_timeStamp0;
       return false;
     }
-    os_delay_us(10);
+    os_delay_us(PING_POLL_PERIOD);
   }
 
   *response = ping_timeStamp1 - ping_timeStamp0;
-  if (*response < 100) {
-    // false result
+  if (*response < 50) {
+    // probably a previous echo - false result
     return false;
   }
   return true;
 }
 
+
+/**
+ * Initiates the GPIOs
+ */
 void ICACHE_FLASH_ATTR
-ping_init(uint8_t pingPin, uint8_t responsePin) {
-  ping_triggerPin = pingPin;
-  ping_echoPin = responsePin;
+ping_init(uint8_t triggerPin, uint8_t echoPin) {
+  ping_triggerPin = triggerPin;
+  ping_echoPin = echoPin;
 
   if (easygpio_countBits(1<<ping_triggerPin|1<<ping_echoPin) != 2) {
-    os_printf("ping_init you must specify two unique pins to use\n");
+    os_printf("ping_init: Error: you must specify two unique pins to use\n");
     ping_isInitiated = false;
     return;
   }
 
-  easygpio_pinMode(ping_triggerPin, NOPULL, OUTPUT);
+  if (!easygpio_pinMode(ping_triggerPin, NOPULL, OUTPUT)){
+    os_printf("ping_init: Error: failed to set pinMode\n");
+    return;
+  }
   GPIO_OUTPUT_SET(ping_triggerPin, PING_TRIGGER_DEFAULT_STATE);
 
   if (easygpio_attachInterrupt(ping_echoPin, NOPULL, ping_intr_handler)) {
     ping_isInitiated = true;
   } else {
-    os_printf("ping_init failed to set interrupt\n");
+    os_printf("ping_init: Error: failed to set interrupt\n");
     ping_isInitiated = false;
   }
 

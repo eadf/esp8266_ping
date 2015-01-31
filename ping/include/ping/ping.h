@@ -39,6 +39,10 @@
  * Will give up after maxPeriod (with false as return value)
  */
 bool ping_ping(uint32_t maxPeriod, uint32_t* response);
-void ping_init(uint8_t pingPin, uint8_t responsePin);
+
+/**
+ * Initiates the GPIOs
+ */
+void ping_init(uint8_t triggerPin, uint8_t echoPin);
 
 #endif /* PING_INCLUDE_PING_PING_H_ */

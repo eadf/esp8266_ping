@@ -17,7 +17,6 @@ static void nop_procTask(os_event_t *events);
 void user_init(void);
 void loop(void);
 static void setup(void);
-static char buffer[] = "                                        ";
 
 /**
  * This is the main user program loop
