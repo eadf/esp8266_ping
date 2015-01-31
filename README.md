@@ -1,5 +1,5 @@
 # esp8266-ping
-A HC-SR04 library for the esp8266
+The initial stages of a HC-SR04 library for the esp8266.
 ```
 #include "ping/ping.h"
 ....
@@ -26,3 +26,9 @@ MODULES         = driver easygpio ping user
 ##Requried:
 
 esp_iot_sdk_v0.9.4_14_12_19 ( v0.9.5 breaks everything ) 
+
+
+## TODO
+
+* inches
+* single pin mode
