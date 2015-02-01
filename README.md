@@ -24,8 +24,8 @@ MODULES         = driver easygpio ping user
 ```
 
 ##Circuit
-The HC-SR04 is a 5V device, so you will (at the very least) need a 
-[logic level shifter](http://elinux.org/RPi_GPIO_Interface_Circuits) on the echo pin.
+The HC-SR04 is a 5V device, so you will (at the very least) need a [voltage divider](http://elinux.org/RPi_GPIO_Interface_Circuits#Voltage_divider) on the echo pin.
+Or even better: [logic level shifter](http://elinux.org/RPi_GPIO_Interface_Circuits#Level_Shifters) 
 
 ##Required:
 
