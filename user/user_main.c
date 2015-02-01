@@ -24,11 +24,12 @@ static void setup(void);
 void ICACHE_FLASH_ATTR
 loop(void) {
   static uint8_t iterations = 0;
-  uint32_t period = 0;
-  if (ping_ping(5000, &period) ) {
-    os_printf("Response %d us ~ %d mm \n", period, (int)(((float)period)/5.8));
+  float distance = 0;
+  float maxDistance = 500;
+  if (ping_pingDistance(PING_MM, maxDistance, &distance) ) {
+    os_printf("Response ~ %d mm \n", (int)distance);
   } else {
-    os_printf("Failed to get any response within %d us period\n", period);
+    os_printf("Failed to get any response.\n");
   }
   iterations += 1;
 }

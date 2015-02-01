@@ -34,11 +34,25 @@
 
 #include "c_types.h"
 
+#define PING_US_TO_MM (1.0/5.8)
+#define PING_US_TO_INCH (1.0/148.0)
+
+typedef enum {
+  PING_MM = 0,
+  PING_INCHES
+} Ping_Unit;
+
 /**
  * Sends a ping, and returns the number of microseconds it took to receive a response.
  * Will give up after maxPeriod (with false as return value)
  */
 bool ping_ping(uint32_t maxPeriod, uint32_t* response);
+
+/**
+ * Sends a ping, and returns the response in the specified unit (mm/inches)
+ * returns false if no result could be found.
+ */
+bool ping_pingDistance(Ping_Unit unit, float maxDistance, float* returnDistance);
 
 /**
  * Initiates the GPIOs

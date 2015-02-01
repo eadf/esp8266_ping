@@ -95,8 +95,11 @@ ping_ping(uint32_t maxPeriod, uint32_t* response) {
 
   while (GPIO_INPUT_GET(ping_echoPin)) {
     if (ping_micros > timeOutAt) {
-      // echo pin never went low, something is wrong
-      os_printf("ping_ping: Error: echo pin permanently high?.\n");
+      // echo pin never went low, something is wrong.
+
+      // turns out this happens whenever the sensor doesn't receive any echo at all.
+
+      //os_printf("ping_ping: Error: echo pin %d permanently high %d?.\n", ping_echoPin, GPIO_INPUT_GET(ping_echoPin));
       *response = ping_micros - ping_timeStamp0;
 
       // Wake up a sleeping device
@@ -111,10 +114,12 @@ ping_ping(uint32_t maxPeriod, uint32_t* response) {
     os_delay_us(PING_POLL_PERIOD);
   }
 
-  gpio_pin_intr_state_set(GPIO_ID_PIN(ping_echoPin), GPIO_PIN_INTR_POSEDGE);
   GPIO_OUTPUT_SET(ping_triggerPin, !PING_TRIGGER_DEFAULT_STATE);
-  os_delay_us(50);
+  os_delay_us(40);
   GPIO_OUTPUT_SET(ping_triggerPin, PING_TRIGGER_DEFAULT_STATE);
+  os_delay_us(40);
+  GPIO_DIS_OUTPUT(ping_echoPin);
+  gpio_pin_intr_state_set(GPIO_ID_PIN(ping_echoPin), GPIO_PIN_INTR_POSEDGE);
 
   while (!ping_echoEnded) {
     if (ping_micros > timeOutAt) {
@@ -132,6 +137,39 @@ ping_ping(uint32_t maxPeriod, uint32_t* response) {
   return true;
 }
 
+bool ICACHE_FLASH_ATTR
+ping_pingDistance(Ping_Unit unit, float maxDistance, float* returnDistance) {
+  uint32_t echoTime = 0;
+  uint32_t maxPeriod = 0;
+
+  switch (unit) {
+    case PING_MM:
+      maxPeriod = maxDistance/PING_US_TO_MM;
+      break;
+    case PING_INCHES:
+      maxPeriod = maxDistance/PING_US_TO_INCH;
+      break;
+    default:
+      os_printf("ping_pingDistance: Error: unit=%d is undefined\n", unit );
+      return false;
+  }
+  if (!ping_ping(maxPeriod, &echoTime)) {
+    //os_printf("ping_ping failed: maxPeriod=%d echoTime=%d\n",maxPeriod, (int)echoTime );
+    return false;
+  }
+  switch (unit) {
+    case PING_MM:
+      *returnDistance = ((float)echoTime)*PING_US_TO_MM;
+      break;
+    case PING_INCHES:
+      *returnDistance = ((float)echoTime)*PING_US_TO_INCH;
+      break;
+    default:
+      os_printf("ping_pingDistance: Error: unit=%d is undefined\n", unit );
+      return false;
+  }
+  return true;
+}
 
 /**
  * Initiates the GPIOs
@@ -141,6 +179,8 @@ ping_init(uint8_t triggerPin, uint8_t echoPin) {
   ping_triggerPin = triggerPin;
   ping_echoPin = echoPin;
 
+  // maybe it is my 3V3 <-> 5V level shifter that's messing up "one pin" mode
+  // it just doesn't work.
   if (easygpio_countBits(1<<ping_triggerPin|1<<ping_echoPin) != 2) {
     os_printf("ping_init: Error: you must specify two unique pins to use\n");
     ping_isInitiated = false;
@@ -148,15 +188,16 @@ ping_init(uint8_t triggerPin, uint8_t echoPin) {
   }
 
   if (!easygpio_pinMode(ping_triggerPin, NOPULL, OUTPUT)){
-    os_printf("ping_init: Error: failed to set pinMode\n");
+    os_printf("ping_init: Error: failed to set pinMode on trigger pin\n");
     return;
   }
   GPIO_OUTPUT_SET(ping_triggerPin, PING_TRIGGER_DEFAULT_STATE);
 
   if (easygpio_attachInterrupt(ping_echoPin, NOPULL, ping_intr_handler)) {
     ping_isInitiated = true;
+    os_printf("\nInitiated ping module with trigger pin = %d echo pin = %d\n\n",ping_triggerPin, ping_echoPin );
   } else {
-    os_printf("ping_init: Error: failed to set interrupt\n");
+    os_printf("ping_init: Error: failed to set interrupt on echo pin\n");
     ping_isInitiated = false;
   }
 

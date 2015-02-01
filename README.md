@@ -23,6 +23,10 @@ Makefile:
 MODULES         = driver easygpio ping user
 ```
 
+##Circuit
+The HC-SR04 is a 5V device, so you will (at the very least) need a 
+(logic level shifter)[http://elinux.org/RPi_GPIO_Interface_Circuits] on the echo pin
+
 ##Required:
 
 esp_iot_sdk_v0.9.4_14_12_19 ( v0.9.5 breaks everything ) 
@@ -30,7 +34,7 @@ esp_iot_sdk_v0.9.4_14_12_19 ( v0.9.5 breaks everything )
 
 ## TODO
 
-* inches
+~~~* inches~~~
 * single pin mode
 * sdk v0.9.5 compability
 
