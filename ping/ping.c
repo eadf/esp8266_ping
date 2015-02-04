@@ -130,8 +130,8 @@ ping_ping(uint32_t maxPeriod, uint32_t* response) {
   }
 
   *response = ping_timeStamp1 - ping_timeStamp0;
-  if (*response < 50) {
-    // probably a previous echo - false result
+  if (ping_timeStamp1 < ping_timeStamp0 || *response < 50) {
+    // probably a previous echo or clock overflow - false result
     return false;
   }
   return true;
@@ -197,7 +197,7 @@ ping_init(uint8_t triggerPin, uint8_t echoPin) {
     ping_isInitiated = true;
     os_printf("\nInitiated ping module with trigger pin = %d echo pin = %d\n\n",ping_triggerPin, ping_echoPin );
   } else {
-    os_printf("ping_init: Error: failed to set interrupt on echo pin\n");
+    os_printf("ping_init: Error: failed to set interrupt on echo pin %d\n", ping_echoPin);
     ping_isInitiated = false;
   }
 
