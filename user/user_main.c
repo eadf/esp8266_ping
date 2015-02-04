@@ -40,7 +40,7 @@ loop(void) {
  */
 static void ICACHE_FLASH_ATTR
 setup(void) {
-  ping_init(0,2);
+  ping_init(0,2); // Trigger=GPIO0, ECHO=GPIO2
   // Start loop timer
   os_timer_disarm(&loop_timer);
   os_timer_setfn(&loop_timer, (os_timer_func_t *) loop, NULL);
