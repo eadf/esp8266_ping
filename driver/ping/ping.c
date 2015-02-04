@@ -187,13 +187,13 @@ ping_init(uint8_t triggerPin, uint8_t echoPin) {
     return;
   }
 
-  if (!easygpio_pinMode(ping_triggerPin, NOPULL, OUTPUT)){
+  if (!easygpio_pinMode(ping_triggerPin, EASYGPIO_NOPULL, EASYGPIO_OUTPUT)){
     os_printf("ping_init: Error: failed to set pinMode on trigger pin\n");
     return;
   }
   GPIO_OUTPUT_SET(ping_triggerPin, PING_TRIGGER_DEFAULT_STATE);
 
-  if (easygpio_attachInterrupt(ping_echoPin, NOPULL, ping_intr_handler)) {
+  if (easygpio_attachInterrupt(ping_echoPin, EASYGPIO_NOPULL, ping_intr_handler)) {
     ping_isInitiated = true;
     os_printf("\nInitiated ping module with trigger pin = %d echo pin = %d\n\n",ping_triggerPin, ping_echoPin );
   } else {

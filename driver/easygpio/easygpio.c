@@ -122,12 +122,12 @@ easygpio_getGPIONameFunc(uint8_t gpio_pin, uint32_t *gpio_name, uint8_t *gpio_fu
  * 'pullUp' takes precedence over pullDown
  */
 static void ICACHE_FLASH_ATTR
-easygpio_setupPullsByName(uint32_t gpio_name, PullStatus pullStatus) {
+easygpio_setupPullsByName(uint32_t gpio_name, EasyGPIO_PullStatus pullStatus) {
 
-  if (PULLUP == pullStatus){
+  if (EASYGPIO_PULLUP == pullStatus){
     PIN_PULLDWN_DIS(gpio_name);
     PIN_PULLUP_EN(gpio_name);
-  } else if (PULLDOWN == pullStatus){
+  } else if (EASYGPIO_PULLDOWN == pullStatus){
     PIN_PULLUP_DIS(gpio_name);
     PIN_PULLDWN_EN(gpio_name);
   } else {
@@ -140,8 +140,8 @@ easygpio_setupPullsByName(uint32_t gpio_name, PullStatus pullStatus) {
  * Sets the pull up and pull down registers for a pin.
  * 'pullUp' takes precedence over pullDown
  */
-static bool ICACHE_FLASH_ATTR
-easygpio_setupPulls(uint8_t gpio_pin, PullStatus pullStatus) {
+bool ICACHE_FLASH_ATTR
+easygpio_pullMode(uint8_t gpio_pin, EasyGPIO_PullStatus pullStatus) {
   uint32_t gpio_name;
   uint8_t gpio_func;
 
@@ -158,7 +158,7 @@ easygpio_setupPulls(uint8_t gpio_pin, PullStatus pullStatus) {
  * pull down registers for that pin.
  */
 bool ICACHE_FLASH_ATTR
-easygpio_pinMode(uint8_t gpio_pin, PullStatus pullStatus, PinMode pinMode) {
+easygpio_pinMode(uint8_t gpio_pin, EasyGPIO_PullStatus pullStatus, EasyGPIO_PinMode pinMode) {
   uint32_t gpio_name;
   uint8_t gpio_func;
 
@@ -169,7 +169,7 @@ easygpio_pinMode(uint8_t gpio_pin, PullStatus pullStatus, PinMode pinMode) {
   PIN_FUNC_SELECT(gpio_name, gpio_func);
   easygpio_setupPullsByName(gpio_name, pullStatus);
 
-  if (OUTPUT == pinMode) {
+  if (EASYGPIO_OUTPUT == pinMode) {
     GPIO_DIS_OUTPUT(gpio_pin);
   }
   return true;
@@ -179,7 +179,7 @@ easygpio_pinMode(uint8_t gpio_pin, PullStatus pullStatus, PinMode pinMode) {
  * Sets the 'gpio_pin' pin as a GPIO and sets the interrupt to trigger on that pin
  */
 bool ICACHE_FLASH_ATTR
-easygpio_attachInterrupt(uint8_t gpio_pin, PullStatus pullStatus, void (*interruptHandler)(void)) {
+easygpio_attachInterrupt(uint8_t gpio_pin, EasyGPIO_PullStatus pullStatus, void (*interruptHandler)(void)) {
   uint32_t gpio_name;
   uint8_t gpio_func;
 
