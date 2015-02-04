@@ -55,8 +55,13 @@ bool ping_ping(uint32_t maxPeriod, uint32_t* response);
 bool ping_pingDistance(Ping_Unit unit, float maxDistance, float* returnDistance);
 
 /**
- * Initiates the GPIOs
+ * Initiates the GPIOs.
+ * Set triggerPin and echoPin to the same value for one-pin mode.
  */
-void ping_init(uint8_t triggerPin, uint8_t echoPin);
+bool ping_init(uint8_t triggerPin, uint8_t echoPin);
 
+/**
+ * Initiates the GPIO for one-pin mode.
+ */
+bool ping_initOnePinMode(uint8_t triggerAndEchoPin);
 #endif /* PING_INCLUDE_PING_PING_H_ */

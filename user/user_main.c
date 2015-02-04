@@ -7,6 +7,7 @@
 #include "user_interface.h"
 #include "driver/stdout.h"
 
+#define SAMPLE_PERIOD 250 // 250 ms between each sample. you could go faster if you like
 #define user_procTaskPrio        0
 #define user_procTaskQueueLen    1
 static volatile os_timer_t loop_timer;
@@ -25,7 +26,7 @@ void ICACHE_FLASH_ATTR
 loop(void) {
   static uint8_t iterations = 0;
   float distance = 0;
-  float maxDistance = 500;
+  float maxDistance = 1000; // 1 meter
   if (ping_pingDistance(PING_MM, maxDistance, &distance) ) {
     os_printf("Response ~ %d mm \n", (int)distance);
   } else {
@@ -40,11 +41,13 @@ loop(void) {
  */
 static void ICACHE_FLASH_ATTR
 setup(void) {
-  ping_init(0,2); // Trigger=GPIO0, ECHO=GPIO2
+  uint8_t echoPin = 2;
+  uint8_t triggerPin = 0;
+  ping_init(triggerPin, echoPin); // trigger=GPIO0, echo=GPIO2, set the pins to the same value for one-pin-mode
   // Start loop timer
   os_timer_disarm(&loop_timer);
   os_timer_setfn(&loop_timer, (os_timer_func_t *) loop, NULL);
-  os_timer_arm(&loop_timer, 500, 1);
+  os_timer_arm(&loop_timer, SAMPLE_PERIOD, 1);
 }
 
 //Do nothing function

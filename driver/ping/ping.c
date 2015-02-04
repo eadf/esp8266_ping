@@ -48,8 +48,6 @@ static volatile bool       ping_echoEnded = false;
 
 static uint8_t ping_triggerPin = 255;
 static uint8_t ping_echoPin = 255;
-static bool singlePinMode = false;
-
 static bool ping_isInitiated = false;
 
 // forward declarations
@@ -95,17 +93,18 @@ ping_ping(uint32_t maxPeriod, uint32_t* response) {
     os_printf("ping_ping: Error: not initiated properly.\n");
     return false;
   }
-  if (singlePinMode){
-    GPIO_DIS_OUTPUT(ping_echoPin);
-    os_delay_us(10);
-  }
+  //if (singlePinMode) {
+    // this should not be enabled
+  //  GPIO_DIS_OUTPUT(ping_echoPin);
+  //  os_delay_us(10);
+  //}
   while (GPIO_INPUT_GET(ping_echoPin)) {
     if (ping_micros > timeOutAt) {
       // echo pin never went low, something is wrong.
 
       // turns out this happens whenever the sensor doesn't receive any echo at all.
 
-      os_printf("ping_ping: Error: echo pin %d permanently high %d?.\n", ping_echoPin, GPIO_INPUT_GET(ping_echoPin));
+      //os_printf("ping_ping: Error: echo pin %d permanently high %d?.\n", ping_echoPin, GPIO_INPUT_GET(ping_echoPin));
       *response = ping_micros - ping_timeStamp0;
 
       // Wake up a sleeping device
@@ -120,16 +119,10 @@ ping_ping(uint32_t maxPeriod, uint32_t* response) {
     os_delay_us(PING_POLL_PERIOD);
   }
 
+  GPIO_OUTPUT_SET(ping_triggerPin, 1);
+  os_delay_us(PING_TRIGGER_LENGTH);
+  GPIO_OUTPUT_SET(ping_triggerPin, 0);
 
-  if (singlePinMode){
-    GPIO_OUTPUT_SET(ping_triggerPin, 1);
-    os_delay_us(PING_TRIGGER_LENGTH);
-    GPIO_OUTPUT_SET(ping_triggerPin, 0);
-  } else {
-    GPIO_OUTPUT_SET(ping_triggerPin, !PING_TRIGGER_DEFAULT_STATE);
-    os_delay_us(PING_TRIGGER_LENGTH);
-    GPIO_OUTPUT_SET(ping_triggerPin, PING_TRIGGER_DEFAULT_STATE);
-  }
   GPIO_DIS_OUTPUT(ping_echoPin);
   gpio_pin_intr_state_set(GPIO_ID_PIN(ping_echoPin), GPIO_PIN_INTR_POSEDGE);
 
@@ -184,21 +177,28 @@ ping_pingDistance(Ping_Unit unit, float maxDistance, float* returnDistance) {
 }
 
 /**
+ * Initiates the GPIO for one-pin mode.
+ */
+bool ICACHE_FLASH_ATTR
+ping_initOnePinMode(uint8_t triggerAndEchoPin) {
+  return ping_init(triggerAndEchoPin, triggerAndEchoPin);
+}
+
+/**
  * Initiates the GPIOs
  */
-void ICACHE_FLASH_ATTR
+bool ICACHE_FLASH_ATTR
 ping_init(uint8_t triggerPin, uint8_t echoPin) {
   ping_triggerPin = triggerPin;
   ping_echoPin = echoPin;
+  bool singlePinMode = false;
 
   if (ping_triggerPin == ping_echoPin) {
     singlePinMode = true;
-
   } else {
-
     if (!easygpio_pinMode(ping_triggerPin, EASYGPIO_NOPULL, EASYGPIO_OUTPUT)){
       os_printf("ping_init: Error: failed to set pinMode on trigger pin\n");
-      return;
+      return false;
     }
     GPIO_OUTPUT_SET(ping_triggerPin, PING_TRIGGER_DEFAULT_STATE);
   }
@@ -206,13 +206,14 @@ ping_init(uint8_t triggerPin, uint8_t echoPin) {
   if (easygpio_attachInterrupt(ping_echoPin, EASYGPIO_NOPULL, ping_intr_handler)) {
     ping_disableInterrupt();
     if (singlePinMode) {
-      GPIO_OUTPUT_SET(ping_triggerPin, 0);  // 0 is default output when single pin mode
+      // easygpio_attachInterrupt() disables output, enable it again
+      GPIO_OUTPUT_SET(ping_triggerPin, PING_TRIGGER_DEFAULT_STATE);
     }
-    os_printf("\nInitiated ping module with trigger pin = %d echo pin = %d. singlepinmode=%d\n\n",ping_triggerPin, ping_echoPin, singlePinMode);
+    os_printf("\nInitiated ping module with trigger pin=%d echo pin=%d.\n\n",ping_triggerPin, ping_echoPin);
     ping_isInitiated = true;
   } else {
     os_printf("ping_init: Error: failed to set interrupt on echo pin %d\n", ping_echoPin);
     ping_isInitiated = false;
   }
-
+  return ping_isInitiated;
 }
