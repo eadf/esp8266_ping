@@ -31,7 +31,7 @@ Or even better: [logic level shifter](http://elinux.org/RPi_GPIO_Interface_Circu
 
 esp_iot_sdk_v0.9.4_14_12_19 ( v0.9.5 breaks everything ) 
 
-Actually, i have not tested this with v0.9.5. I tested a clean sdk 0.9.5 install with one of the basic examples (could have been blinky). It compiled and uploaded fine but the esp had a infinite crash loop with some message about "MEM CHK FAIL" on the console. So i threw the whole sdk out. I will try 0.9.5 again once [mqtt](https://github.com/tuanpmt/esp_mqtt) upgrades.
+Actually, i have not tested this with v0.9.5. I tested a clean sdk 0.9.5 install with one of the basic examples (could have been blinky). It compiled and uploaded fine but the esp had a infinite crash loop with some message about "MEM CHK FAIL" on the console. So i threw the whole sdk out. I will try upgrading the sdk again once [mqtt](https://github.com/tuanpmt/esp_mqtt) upgrades to 0.9.5+.
 
 ## TODO
 
