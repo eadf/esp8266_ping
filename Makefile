@@ -24,7 +24,7 @@ ESPPORT		?= /dev/ttyUSB0
 TARGET		= app
 
 # which modules (subdirectories) of the project to include in compiling
-MODULES		= driver easygpio ping user
+MODULES		= driver driver/easygpio driver/ping user
 EXTRA_INCDIR    = include $(SDK_BASE)/../include
 
 # libraries used in this project, mainly provided by the SDK
