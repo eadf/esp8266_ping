@@ -20,7 +20,7 @@ if (ping_pingDistance(PING_MM, maxDistance, &distance) ) {
 
 Makefile:
 ```
-MODULES         = driver easygpio ping user
+MODULES         = driver driver/easygpio driver/ping user
 ```
 
 ##Circuit
