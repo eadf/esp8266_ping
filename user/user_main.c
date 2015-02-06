@@ -62,7 +62,10 @@ user_init(void) {
   stdoutInit();
 
   //Set station mode
-  wifi_set_opmode( NULL_MODE );
+  //wifi_set_opmode(NULL_MODE); // NULL_MODE will crash the system under 0.9.5. It works with 0.9.4.
+
+  //if you flash your device with code that sets NULL_MODE it will remain in the system
+  //until you flash the device with code that actively sets opmode to something useful.
 
   // Start setup timer
   os_timer_disarm(&loop_timer);
