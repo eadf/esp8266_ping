@@ -72,7 +72,7 @@ In the root of this project create a soft link Makefile -> Makefile.[mac,linux]
 ```
 ln -s Makefile.linux Makefile
 ```
-You don't *have* to do this, it just makes it more convenient to run make (instead of *make -f Makefile.linux*)
+You don't *have* to do this, it just makes it more convenient to run ```make``` (instead of ```make -f Makefile.linux```)
 
 To make a clean build, flash and connect to the esp console you just do this in a shell:
 ```
@@ -83,4 +83,3 @@ make clean && make test
 You won't be needing esptool, my makefiles only uses esptool.py (provided by esp-open-sdk)
 
 I have tested this with sdk v0.9.5 and v0.9.4 (linux & mac makefile)
-
