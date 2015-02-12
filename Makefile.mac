@@ -14,7 +14,7 @@ SDK_BASE	?= /opt/local/esp-open-sdk/sdk
 
 #Esptool.py path and port
 ESPTOOL		?= esptool.py
-ESPPORT		?= /dev/ttyUSB0
+ESPPORT		?= /dev/tty.usbserial
 
 # name for the target project
 TARGET		= app
@@ -92,7 +92,7 @@ endef
 
 .PHONY: all checkdirs clean
 
-all: checkdirs $(TARGET_OUT) $(FW_FILE_1) 
+all: checkdirs $(TARGET_OUT) $(FW_FILE_1)
 
 $(FW_FILE_1): $(TARGET_OUT)
 	$(vecho) "FW $@"
@@ -106,7 +106,7 @@ $(APP_AR): $(OBJ)
 	$(vecho) "AR $@"
 	$(Q) $(AR) cru $@ $^
 
-checkdirs: $(BUILD_DIR) 
+checkdirs: $(BUILD_DIR)
 
 $(BUILD_DIR):
 	$(Q) mkdir -p $@
