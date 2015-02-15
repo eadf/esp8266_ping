@@ -5,7 +5,7 @@
 #include "os_type.h"
 #include "user_config.h"
 #include "user_interface.h"
-#include "driver/stdout.h"
+#include "stdout/stdout.h"
 
 #define SAMPLE_PERIOD 250 // 250 ms between each sample. you could go faster if you like
 #define user_procTaskPrio        0
@@ -59,7 +59,7 @@ nop_procTask(os_event_t *events) {
 //Init function 
 void ICACHE_FLASH_ATTR
 user_init(void) {
-  stdoutInit();
+  stdout_init();
 
   //Set station mode
   //wifi_set_opmode(NULL_MODE); // NULL_MODE will crash the system under 0.9.5. It works with 0.9.4.
