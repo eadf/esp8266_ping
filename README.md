@@ -1,5 +1,5 @@
 # esp8266_ping
-A HC-SR04 driver and example for the esp8266.
+A HC-SR04, HY-SRF05 driver and example for the esp8266.
 ```
 #include "ping/ping.h"
 ....
@@ -49,6 +49,10 @@ The arduino library [newping](https://code.google.com/p/arduino-new-ping/) suppo
 * ~~single pin mode~~
 * multiple sensors at once
 * ~~sdk v0.9.5 compability~~ 
+* ~~check compability SRF05~~ SRF05 works w/o any modifications
+* check compability SRF06
+* check compability DYP-ME007
+* check compability Parallax PING™
 
 ## License
 
