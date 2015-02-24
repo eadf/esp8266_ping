@@ -36,7 +36,6 @@
 #include "easygpio/easygpio.h"
 #include "os_type.h"
 
-#define ping_micros (0x7FFFFFFF & system_get_time())
 #define PING_TRIGGER_DEFAULT_STATE 0
 #define PING_TRIGGER_LENGTH 5
 #define PING_POLL_PERIOD 100 // 100 us, used when polling interrupt results
@@ -69,10 +68,10 @@ ping_intr_handler(void) {
 
     if(!ping_echoStarted) {
       gpio_pin_intr_state_set(GPIO_ID_PIN(ping_echoPin), GPIO_PIN_INTR_NEGEDGE);
-      ping_timeStamp0 = ping_micros;
+      ping_timeStamp0 = system_get_time();
       ping_echoStarted = true;
     } else {
-      ping_timeStamp1 = ping_micros;
+      ping_timeStamp1 = system_get_time();
       ping_echoEnded = true;
       ping_disableInterrupt();
     }
@@ -85,10 +84,10 @@ ping_intr_handler(void) {
  */
 bool ICACHE_FLASH_ATTR
 ping_ping(uint32_t maxPeriod, uint32_t* response) {
-  uint32_t timeOutAt = ping_micros + maxPeriod;
+  uint32_t timeOutAt = system_get_time() + maxPeriod;
   ping_echoEnded = false;
   ping_echoStarted = false;
-  ping_timeStamp0 = ping_micros;
+  ping_timeStamp0 = system_get_time();
 
   if (!ping_isInitiated) {
     *response = 0;
@@ -101,13 +100,13 @@ ping_ping(uint32_t maxPeriod, uint32_t* response) {
   //  os_delay_us(10);
   //}
   while (GPIO_INPUT_GET(ping_echoPin)) {
-    if (ping_micros > timeOutAt) {
+    if (system_get_time() > timeOutAt) {
       // echo pin never went low, something is wrong.
 
       // turns out this happens whenever the sensor doesn't receive any echo at all.
 
       //os_printf("ping_ping: Error: echo pin %d permanently high %d?.\n", ping_echoPin, GPIO_INPUT_GET(ping_echoPin));
-      *response = ping_micros - ping_timeStamp0;
+      *response = system_get_time() - ping_timeStamp0;
 
       // Wake up a sleeping device
       GPIO_OUTPUT_SET(ping_triggerPin, PING_TRIGGER_DEFAULT_STATE);
@@ -129,8 +128,8 @@ ping_ping(uint32_t maxPeriod, uint32_t* response) {
   gpio_pin_intr_state_set(GPIO_ID_PIN(ping_echoPin), GPIO_PIN_INTR_POSEDGE);
 
   while (!ping_echoEnded) {
-    if (ping_micros > timeOutAt) {
-      *response = ping_micros - ping_timeStamp0;
+    if (system_get_time() > timeOutAt) {
+      *response = system_get_time() - ping_timeStamp0;
       return false;
     }
     os_delay_us(PING_POLL_PERIOD);
