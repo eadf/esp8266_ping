@@ -63,17 +63,19 @@ ping_disableInterrupt(void) {
 static void
 ping_intr_handler(void) {
   uint32_t gpio_status = GPIO_REG_READ(GPIO_STATUS_ADDRESS);
-  //clear interrupt status
-  GPIO_REG_WRITE(GPIO_STATUS_W1TC_ADDRESS, gpio_status & BIT(ping_echoPin));
+  if (gpio_status & BIT(ping_echoPin)) {
+    // This interrupt was intended for us - clear interrupt status
+    GPIO_REG_WRITE(GPIO_STATUS_W1TC_ADDRESS, gpio_status & BIT(ping_echoPin));
 
-  if(!ping_echoStarted) {
-    gpio_pin_intr_state_set(GPIO_ID_PIN(ping_echoPin), GPIO_PIN_INTR_NEGEDGE);
-    ping_timeStamp0 = ping_micros;
-    ping_echoStarted = true;
-  } else {
-    ping_timeStamp1 = ping_micros;
-    ping_echoEnded = true;
-    ping_disableInterrupt();
+    if(!ping_echoStarted) {
+      gpio_pin_intr_state_set(GPIO_ID_PIN(ping_echoPin), GPIO_PIN_INTR_NEGEDGE);
+      ping_timeStamp0 = ping_micros;
+      ping_echoStarted = true;
+    } else {
+      ping_timeStamp1 = ping_micros;
+      ping_echoEnded = true;
+      ping_disableInterrupt();
+    }
   }
 }
 
