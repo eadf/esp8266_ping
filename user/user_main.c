@@ -7,7 +7,6 @@
 #include "user_interface.h"
 #include "stdout/stdout.h"
 
-#define SAMPLE_PERIOD 250 // 250 ms between each sample. you could go faster if you like
 #define user_procTaskPrio        0
 #define user_procTaskQueueLen    1
 static volatile os_timer_t loop_timer;
