@@ -51,7 +51,7 @@ static bool ping_isInitiated = false;
 
 // forward declarations
 static void ping_disableInterrupt(void);
-static void ping_intr_handler(void);
+static void ping_intr_handler(int8_t key);
 
 
 static void
@@ -60,7 +60,7 @@ ping_disableInterrupt(void) {
 }
 
 static void
-ping_intr_handler(void) {
+ping_intr_handler(int8_t key) {
   uint32_t gpio_status = GPIO_REG_READ(GPIO_STATUS_ADDRESS);
   if (gpio_status & BIT(ping_echoPin)) {
     // This interrupt was intended for us - clear interrupt status
