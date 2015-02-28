@@ -13,7 +13,6 @@ static volatile os_timer_t loop_timer;
 os_event_t user_procTaskQueue[user_procTaskQueueLen];
 
 // forward declarations
-static void nop_procTask(os_event_t *events);
 void user_init(void);
 void loop(void);
 static void setup(void);
@@ -23,7 +22,6 @@ static void setup(void);
  */
 void ICACHE_FLASH_ATTR
 loop(void) {
-  static uint8_t iterations = 0;
   float distance = 0;
   float maxDistance = 1000; // 1 meter
   if (ping_pingDistance(PING_MM, maxDistance, &distance) ) {
@@ -31,7 +29,6 @@ loop(void) {
   } else {
     os_printf("Failed to get any response.\n");
   }
-  iterations += 1;
 }
 
 /**
@@ -43,16 +40,10 @@ setup(void) {
   uint8_t echoPin = 2;
   uint8_t triggerPin = 0;
   ping_init(triggerPin, echoPin); // trigger=GPIO0, echo=GPIO2, set the pins to the same value for one-pin-mode
-  // Start loop timer
+  // Start repeating loop timer
   os_timer_disarm(&loop_timer);
   os_timer_setfn(&loop_timer, (os_timer_func_t *) loop, NULL);
-  os_timer_arm(&loop_timer, SAMPLE_PERIOD, 1);
-}
-
-//Do nothing function
-static void ICACHE_FLASH_ATTR
-nop_procTask(os_event_t *events) {
-  os_delay_us(10);
+  os_timer_arm(&loop_timer, PING_SAMPLE_PERIOD, true);
 }
 
 //Init function 
@@ -67,9 +58,6 @@ user_init(void) {
   // Start setup timer
   os_timer_disarm(&loop_timer);
   os_timer_setfn(&loop_timer, (os_timer_func_t *) setup, NULL);
-  os_timer_arm(&loop_timer, 2000, 0);
+  os_timer_arm(&loop_timer, 2000, false);
 
-  //Start no-operation os task
-  system_os_task(nop_procTask, user_procTaskPrio, user_procTaskQueue, user_procTaskQueueLen);
-  system_os_post(user_procTaskPrio, 0, 0);
 }
