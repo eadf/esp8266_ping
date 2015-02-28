@@ -12,7 +12,7 @@
 #     a generated lib/image xxx.a ()
 #
 ifndef PDIR
-GEN_LIBS = libtachometer.a
+GEN_LIBS = libping.a
 endif
 
 
