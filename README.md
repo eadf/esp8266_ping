@@ -50,7 +50,7 @@ The arduino library [newping](https://code.google.com/p/arduino-new-ping/) suppo
 
 * ~~inches~~
 * ~~single pin mode~~
-* ~~multiple sensors at once~~
+* ~~multiple sensors~~
 * ~~sdk v0.9.5 compability~~ 
 * ~~check compability SRF05~~ SRF05 works w/o any modifications
 * check compability SRF06
