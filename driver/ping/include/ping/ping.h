@@ -39,29 +39,38 @@
 
 typedef enum {
   PING_MM = 0,
-  PING_INCHES
+  PING_INCHES,
+  PING_US      // return time instead of distance (inverted Kessel run, anyone?)
 } Ping_Unit;
+
+typedef struct {
+  // 'private' data, don't change anything in here
+  int8_t echoPin;
+  int8_t triggerPin;
+  bool isInitiated;
+  Ping_Unit unit;
+} Ping_Data;
 
 /**
  * Sends a ping, and returns the number of microseconds it took to receive a response.
  * Will give up after maxPeriod (with false as return value)
  */
-bool ping_ping(uint32_t maxPeriod, uint32_t* response);
+bool ping_pingUs(Ping_Data *pingData, uint32_t maxPeriod, uint32_t* response);
 
 /**
  * Sends a ping, and returns the response in the specified unit (mm/inches)
  * returns false if no result could be found.
  */
-bool ping_pingDistance(Ping_Unit unit, float maxDistance, float* returnDistance);
+bool ping_ping(Ping_Data *pingData, float maxDistance, float* returnDistance);
 
 /**
  * Initiates the GPIOs.
  * Set triggerPin and echoPin to the same value for one-pin mode.
  */
-bool ping_init(uint8_t triggerPin, uint8_t echoPin);
+bool ping_init(Ping_Data *pingData, int8_t triggerPin, int8_t echoPin, Ping_Unit unit);
 
 /**
  * Initiates the GPIO for one-pin mode.
  */
-bool ping_initOnePinMode(uint8_t triggerAndEchoPin);
+bool ping_initOnePinMode(Ping_Data *pingData, int8_t triggerAndEchoPin, Ping_Unit unit);
 #endif /* PING_INCLUDE_PING_PING_H_ */

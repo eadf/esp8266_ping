@@ -7,15 +7,14 @@
 #include "user_interface.h"
 #include "stdout/stdout.h"
 
-#define user_procTaskPrio        0
-#define user_procTaskQueueLen    1
 static volatile os_timer_t loop_timer;
-os_event_t user_procTaskQueue[user_procTaskQueueLen];
 
 // forward declarations
 void user_init(void);
 void loop(void);
 static void setup(void);
+static Ping_Data pingA;
+static Ping_Data pingB;
 
 /**
  * This is the main user program loop
@@ -23,11 +22,16 @@ static void setup(void);
 void ICACHE_FLASH_ATTR
 loop(void) {
   float distance = 0;
-  float maxDistance = 1000; // 1 meter
-  if (ping_pingDistance(PING_MM, maxDistance, &distance) ) {
-    os_printf("Response ~ %d mm \n", (int)distance);
+  float maxDistance = 2000; // 2 meter
+  if (ping_ping(&pingA, maxDistance, &distance) ) {
+    os_printf("A Response ~ %d mm \n", (int)distance);
   } else {
-    os_printf("Failed to get any response.\n");
+    os_printf("Failed to get any response from sensor A.\n");
+  }
+  if (ping_ping(&pingB, maxDistance, &distance) ) {
+    os_printf("B Response ~ %d mm \n", (int)distance);
+  } else {
+    os_printf("Failed to get any response from sensor B.\n");
   }
 }
 
@@ -37,9 +41,9 @@ loop(void) {
  */
 static void ICACHE_FLASH_ATTR
 setup(void) {
-  uint8_t echoPin = 2;
-  uint8_t triggerPin = 0;
-  ping_init(triggerPin, echoPin); // trigger=GPIO0, echo=GPIO2, set the pins to the same value for one-pin-mode
+  ping_init(&pingA, 2, 0, PING_MM); // trigger=GPIO0, echo=GPIO2, set the pins to the same value for one-pin-mode
+  ping_init(&pingB, 4, 5, PING_MM); // trigger=GPIO4, echo=GPIO5, set the pins to the same value for one-pin-mode
+
   // Start repeating loop timer
   os_timer_disarm(&loop_timer);
   os_timer_setfn(&loop_timer, (os_timer_func_t *) loop, NULL);
@@ -49,6 +53,8 @@ setup(void) {
 //Init function 
 void ICACHE_FLASH_ATTR
 user_init(void) {
+  // Make uart0 work with just the TX pin. Baud:115200,n,8,1
+  // The RX pin is now free for GPIO use.
   stdout_init();
 
   // turn off WiFi for this console only demo
