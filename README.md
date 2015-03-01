@@ -3,15 +3,18 @@ A HC-SR04, HY-SRF05 driver and example for the esp8266.
 ```
 #include "ping/ping.h"
 ....
+static Ping_Data pingA;;
+....
 // setup
 int triggerPin = 0;
 int echoPin = 2;
-ping_init(triggerPin,echoPin); // set the trigger and echo pin to the same number for one-pin mode
+ping_init(&pingA, triggerPin, echoPin, PING_MM); // set the trigger and echo pin to the same number for one-pin mode
+
 ....
 // loop:
 float distance = 0;
 float maxDistance = 500;
-if (ping_pingDistance(PING_MM, maxDistance, &distance) ) {
+if (ping_pingDistance(&pingA, maxDistance, &distance) ) {
   os_printf("Response ~ %d mm \n", (int)distance);
 } else {
   os_printf("Failed to get any response.\n");
@@ -20,7 +23,7 @@ if (ping_pingDistance(PING_MM, maxDistance, &distance) ) {
 
 Makefile:
 ```
-MODULES         = driver driver/easygpio driver/ping user
+MODULES         = driver/stdout driver/easygpio driver/ping user
 ```
 
 ##Circuit
@@ -47,7 +50,7 @@ The arduino library [newping](https://code.google.com/p/arduino-new-ping/) suppo
 
 * ~~inches~~
 * ~~single pin mode~~
-* multiple sensors at once
+* ~~multiple sensors at once~~
 * ~~sdk v0.9.5 compability~~ 
 * ~~check compability SRF05~~ SRF05 works w/o any modifications
 * check compability SRF06
