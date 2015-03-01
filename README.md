@@ -3,7 +3,7 @@ A HC-SR04, HY-SRF05 driver and example for the esp8266.
 ```
 #include "ping/ping.h"
 ....
-static Ping_Data pingA;;
+static Ping_Data pingA;
 ....
 // setup
 int triggerPin = 0;
@@ -28,7 +28,7 @@ MODULES         = driver/stdout driver/easygpio driver/ping user
 
 ##Circuit
 The HC-SR04 is a 5V device, so you will (at the very least) need a [voltage divider](http://elinux.org/RPi_GPIO_Interface_Circuits#Voltage_divider) on the echo pin.
-Or even better: [logic level shifter](http://elinux.org/RPi_GPIO_Interface_Circuits#Level_Shifters) 
+Or even better: [a logic level shifter](http://elinux.org/RPi_GPIO_Interface_Circuits#Level_Shifters) 
 
 ### single pin mode
 If you want to run this in 'single pin mode' behind a logic level shifter you can connect the echo pin on the 3V3 side to the trigger GPIO via a 5KΩ resistor. That works for me at least. 
@@ -85,4 +85,4 @@ make clean && make test
 
 You won't be needing esptool, the makefile only uses esptool.py (provided by [esp_open_sdk](https://github.com/pfalcon/esp-open-sdk))
 
-I have tested this with sdk v0.9.5 and v0.9.4 (linux & mac)
+I have tested this with sdk v0.9.4 and v0.9.5 (linux & mac)
