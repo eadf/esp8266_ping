@@ -69,7 +69,7 @@ easygpio_countBits(uint32_t gpioMask) {
   uint8_t i=0;
   uint8_t numberOfPins=0;
   for (i=0; i<32; i++){
-    numberOfPins += (gpioMask & 1<<i)?1:0;
+    numberOfPins += (gpioMask & BIT(i))?1:0;
   }
   return numberOfPins;
 }
@@ -279,15 +279,15 @@ void
 easygpio_outputSet(uint8_t gpio_pin, uint8_t value) {
   if (16==gpio_pin) {
     WRITE_PERI_REG(RTC_GPIO_OUT,
-                   (READ_PERI_REG(RTC_GPIO_OUT) & 0xfffffffeUL) | (1UL & value));
+                   (READ_PERI_REG(RTC_GPIO_OUT) & 0xfffffffeUL) | (0x1UL & value));
   } else {
 #ifdef EASYGPIO_USE_GPIO_OUTPUT_SET
     GPIO_OUTPUT_SET(GPIO_ID_PIN(gpio_pin), value);
 #else
     if (value&1){
-      WRITE_PERI_REG( PERIPHS_GPIO_BASEADDR, READ_PERI_REG(PERIPHS_GPIO_BASEADDR) | (0x1UL<<gpio_pin));
+      WRITE_PERI_REG( PERIPHS_GPIO_BASEADDR, READ_PERI_REG(PERIPHS_GPIO_BASEADDR) | BIT(gpio_pin));
     } else {
-      WRITE_PERI_REG( PERIPHS_GPIO_BASEADDR, READ_PERI_REG(PERIPHS_GPIO_BASEADDR) & ~(0x1UL<<gpio_pin));
+      WRITE_PERI_REG( PERIPHS_GPIO_BASEADDR, READ_PERI_REG(PERIPHS_GPIO_BASEADDR) & ~BIT(gpio_pin));
     }
 #endif
   }
@@ -341,7 +341,7 @@ void easygpio_outputEnable(uint8_t gpio_pin, uint8_t value) {
     // write the value before flipping to output
     // - so we don't flash previous value for a few ns.
     WRITE_PERI_REG(RTC_GPIO_OUT,
-                           (READ_PERI_REG(RTC_GPIO_OUT) & 0xfffffffeUL) | (1UL & value));
+                           (READ_PERI_REG(RTC_GPIO_OUT) & 0xfffffffeUL) | (0x1UL & value));
 
     WRITE_PERI_REG(RTC_GPIO_ENABLE,
           (READ_PERI_REG(RTC_GPIO_ENABLE) & 0xfffffffeUL) | 0x1UL); //out enable
