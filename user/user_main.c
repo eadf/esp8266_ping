@@ -50,7 +50,15 @@ setup(void) {
   os_timer_arm(&loop_timer, PING_SAMPLE_PERIOD, true);
 }
 
-//Init function 
+/**
+ * ESP SDK V1.1.0 introduced a new user init callback for RF settings.
+ * This optional function must be present for SDK 1.1.0 and 1.2.0,
+ * In 1.3.0, it can be removed.
+ */
+void user_rf_pre_init(void)
+{
+}
+//Init function
 void ICACHE_FLASH_ATTR
 user_init(void) {
   // Make uart0 work with just the TX pin. Baud:115200,n,8,1

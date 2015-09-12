@@ -120,18 +120,19 @@ easygpio_getGPIONameFunc(uint8_t gpio_pin, uint32_t *gpio_name, uint8_t *gpio_fu
 /**
  * Sets the pull up and pull down registers for a pin.
  * 'pullUp' takes precedence over pullDown
+ *
+ * Note that there is no pulldown functionality on the ESP8266 - you need to use
+ * an external pulldown resistor. The asssociated functions have been removed from
+ * the SDK starting with SDK version 1.1.0_15_05_26
  */
 static void ICACHE_FLASH_ATTR
 easygpio_setupPullsByName(uint32_t gpio_name, EasyGPIO_PullStatus pullStatus) {
 
   if (EASYGPIO_PULLUP == pullStatus){
-    PIN_PULLDWN_DIS(gpio_name);
     PIN_PULLUP_EN(gpio_name);
   } else if (EASYGPIO_PULLDOWN == pullStatus){
     PIN_PULLUP_DIS(gpio_name);
-    PIN_PULLDWN_EN(gpio_name);
   } else {
-    PIN_PULLDWN_DIS(gpio_name);
     PIN_PULLUP_DIS(gpio_name);
   }
 }
