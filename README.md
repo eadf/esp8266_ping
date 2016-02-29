@@ -35,8 +35,8 @@ If you want to run this in 'single pin mode' behind a logic level shifter you ca
 
 esp8266 | via | level shifter 3V3| level shifter 5V | HC-SR04
 --------|-----|-------------|-----------------------|------------
-GPIOX   | -   | port1 3V3   | port1 5V| trigger
-GPIOX   | 5kΩ   | port2 3V3   | port2 5V| echo
+GPIOX   | 0Ω   | port1 3V3   | port1 5V| trigger
+GPIOX   | 5KΩ   | port2 3V3   | port2 5V| echo
 
 It would be nice if some EE could verify this hookup.
 
