@@ -43,9 +43,10 @@ loop(void) {
   // set this shift-rotating pattern to anything you like
   static uint32_t shiftReg = 1;//0b101010101;
   uint8_t i=0;
+  os_printf("Setting ");
   for (i=0; i<pinsToTestLen; i++) {
     uint8_t flag = (shiftReg >> i) & 0x1;
-    os_printf("Setting GPIO%d=%d", pinsToTest[i], flag);
+    os_printf("GPIO%d=%d", pinsToTest[i], flag);
     easygpio_outputSet(pinsToTest[i], flag);
     //easygpio_outputEnable(pinsToTest[i], flag);
     if(i<pinsToTestLen-1) {

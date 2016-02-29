@@ -40,7 +40,6 @@ typedef enum {
 } EasyGPIO_PinMode;
 
 typedef enum {
-  EASYGPIO_PULLDOWN=2,
   EASYGPIO_PULLUP=3,
   EASYGPIO_NOPULL=4
 } EasyGPIO_PullStatus;
@@ -68,17 +67,13 @@ bool easygpio_detachInterrupt(uint8_t gpio_pin);
 uint8_t easygpio_countBits(uint32_t gpioMask);
 
 /**
- * Sets the 'gpio_pin' pin as a GPIO and sets the pull-up and
- * pull-down registers for that pin.
+ * Sets the 'gpio_pin' pin as a GPIO and enables/disables the pull-up on that pin.
  * 'pullStatus' has no effect on output pins or GPIO16
  */
 bool easygpio_pinMode(uint8_t gpio_pin, EasyGPIO_PullStatus pullStatus, EasyGPIO_PinMode pinMode);
 
 /**
- * Sets the pull up and pull down registers for a pin.
- * This seems to do very little for the actual pull effect
- * - it's always pull-up for both EASYGPIO_PULLUP and EASYGPIO_PULLDOWN.
- * But that is something the SDK needs to fix.
+ * Enable or disable the internal pull up for a pin.
  */
 bool easygpio_pullMode(uint8_t gpio_pin, EasyGPIO_PullStatus pullStatus);
 

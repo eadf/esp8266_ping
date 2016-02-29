@@ -34,7 +34,7 @@
 #include "stdout/stdout.h"
 
 #define SAMPLE_PERIOD 750 // 750 ms
-static os_timer_t dht22_timer;
+static os_timer_t loop_timer;
 uint8_t pinsToTest[] = {0,2,3,4,5,12,13,14,15,16};
 uint8_t pinsToTestLen = 10;
 
@@ -42,8 +42,7 @@ static void ICACHE_FLASH_ATTR
 loop(void) {
   uint8_t i=0;
   for (i=0; i<pinsToTestLen; i++) {
-    easygpio_outputDisable(pinsToTest[i]);
-    os_printf("GPIO%d=>%d", pinsToTest[i], easygpio_inputGet(pinsToTest[i]));
+    os_printf("GPIO%d==%d", pinsToTest[i], easygpio_inputGet(pinsToTest[i]));
     if(i<pinsToTestLen-1) {
       os_printf(", ");
     }
@@ -59,9 +58,9 @@ setup(void) {
     easygpio_pinMode(pinsToTest[i], EASYGPIO_NOPULL, EASYGPIO_INPUT);
   }
   os_printf("Starting to test the gpio pin values:\n");
-  os_timer_disarm(&dht22_timer);
-  os_timer_setfn(&dht22_timer, (os_timer_func_t *)loop, NULL);
-  os_timer_arm(&dht22_timer, SAMPLE_PERIOD, true);
+  os_timer_disarm(&loop_timer);
+  os_timer_setfn(&loop_timer, (os_timer_func_t *)loop, NULL);
+  os_timer_arm(&loop_timer, SAMPLE_PERIOD, true);
 }
 
 void ICACHE_FLASH_ATTR
@@ -76,7 +75,7 @@ user_init(void)
   wifi_station_disconnect();
 
   gpio_init();
-  os_timer_disarm(&dht22_timer);
-  os_timer_setfn(&dht22_timer, (os_timer_func_t *)setup, NULL);
-  os_timer_arm(&dht22_timer, 2000, false);
+  os_timer_disarm(&loop_timer);
+  os_timer_setfn(&loop_timer, (os_timer_func_t *)setup, NULL);
+  os_timer_arm(&loop_timer, 2000, false);
 }
