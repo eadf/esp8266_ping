@@ -144,10 +144,7 @@ easygpio_getGPIONameFunc(uint8_t gpio_pin, uint32_t *gpio_name, uint8_t *gpio_fu
 }
 
 /**
- * Sets the pull up and pull down registers for a pin.
- * This seems to do very little for the actual pull effect
- * - it's always pull up for both EASYGPIO_PULLUP and EASYGPIO_PULLDOWN.
- * But that is something the SDK needs to fix.
+ * Sets the pull up registers for a pin.
  */
 static void ICACHE_FLASH_ATTR
 easygpio_setupPullsByName(uint32_t gpio_name, EasyGPIO_PullStatus pullStatus) {
@@ -160,7 +157,7 @@ easygpio_setupPullsByName(uint32_t gpio_name, EasyGPIO_PullStatus pullStatus) {
 }
 
 /**
- * Sets the pull up and pull down registers for a pin.
+ * Sets the pull registers for a pin.
  */
 bool ICACHE_FLASH_ATTR
 easygpio_pullMode(uint8_t gpio_pin, EasyGPIO_PullStatus pullStatus) {
@@ -176,8 +173,7 @@ easygpio_pullMode(uint8_t gpio_pin, EasyGPIO_PullStatus pullStatus) {
 }
 
 /**
- * Sets the 'gpio_pin' pin as a GPIO and sets the pull-up and
- * pull-down registers for that pin.
+ * Sets the 'gpio_pin' pin as a GPIO and sets the pull register for that pin.
  * 'pullStatus' has no effect on output pins or GPIO16
  */
 bool ICACHE_FLASH_ATTR
