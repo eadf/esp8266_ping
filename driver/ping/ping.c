@@ -49,7 +49,7 @@ static volatile uint32_t   ping_allEchoPins = 0; // a mask containing all of the
 
 // forward declarations
 static void ping_disableInterrupt(int8_t pin);
-static void ping_intr_handler(int8_t key);
+static void ping_intr_handler(void *key);
 
 
 static void
@@ -60,7 +60,7 @@ ping_disableInterrupt(int8_t pin) {
 }
 
 static void
-ping_intr_handler(int8_t key) {
+ping_intr_handler(void *key) {
   uint32_t gpio_status = GPIO_REG_READ(GPIO_STATUS_ADDRESS);
   if (ping_allEchoPins & gpio_status) {
     if (ping_currentEchoPin>=0 && (gpio_status & BIT(ping_currentEchoPin))) {
@@ -221,7 +221,7 @@ ping_init(Ping_Data *pingData, int8_t triggerPin, int8_t echoPin, Ping_Unit unit
     GPIO_OUTPUT_SET(pingData->triggerPin, PING_TRIGGER_DEFAULT_STATE);
   }
 
-  if (easygpio_attachInterrupt(pingData->echoPin, EASYGPIO_NOPULL, ping_intr_handler)) {
+  if (easygpio_attachInterrupt(pingData->echoPin, EASYGPIO_NOPULL, ping_intr_handler, NULL)) {
     ping_allEchoPins |= BIT(pingData->echoPin);
     if (singlePinMode) {
       // easygpio_attachInterrupt() disables output, enable it again
