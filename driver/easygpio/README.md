@@ -76,6 +76,6 @@ See an example on how this library can be used [here](https://github.com/eadf/es
 
 ## Required:
 
-esp-open-sdk-1.5.2 or higher.
+esp-open-sdk-v0.9.5 or higher.
 
-I've successfully tested this with sdk v0.9.5 (linux & mac).
+I've successfully tested this with sdk v1.5.2 and v0.9.5 (linux & mac).
