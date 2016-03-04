@@ -28,17 +28,14 @@ MODULES         = driver/stdout driver/easygpio driver/ping user
 
 ##Circuit
 The HC-SR04 is a 5V device, so you will (at the very least) need a [voltage divider](http://elinux.org/RPi_GPIO_Interface_Circuits#Voltage_divider) on the echo pin.
-Or even better: [a logic level shifter](http://elinux.org/RPi_GPIO_Interface_Circuits#Level_Shifters) 
+Or even better: [a logic level shifter.](http://elinux.org/RPi_GPIO_Interface_Circuits#Level_Shifters) 
 
+![Two pins](/doc/esp_circuit_two_pins.png)
 ### single pin mode
-If you want to run this in 'single pin mode' behind a logic level shifter you can connect the echo pin on the 3V3 side to the trigger GPIO via a 5KΩ resistor. That works for me at least. 
 
-esp8266 | via | level shifter 3V3| level shifter 5V | HC-SR04
---------|-----|-------------|-----------------------|------------
-GPIOX   | 0Ω   | port1 3V3   | port1 5V| trigger
-GPIOX   | 5KΩ   | port2 3V3   | port2 5V| echo
+![Single pin mode](/doc/esp_circuit_one pin.png)
 
-It would be nice if some EE could verify this hookup.
+~~If you want to run this in 'single pin mode' behind a logic level shifter you can connect the echo pin on the 3V3 side to the trigger GPIO via a 5KΩ resistor. That works for me at least~~. It used to work, but with another level shifter i can't get it to work anymore. I will investigate further. 
 
 Wiring echo & trigger together on the 5V side does *not* work.
 
@@ -85,4 +82,4 @@ make clean && make test
 
 You won't be needing esptool, the makefile only uses esptool.py (provided by [esp_open_sdk](https://github.com/pfalcon/esp-open-sdk))
 
-I have tested this with sdk v0.9.4 and v0.9.5 (linux & mac)
+I have tested this with sdk v1.5.2, v0.9.4 and v0.9.5 (linux & mac)
