@@ -30,10 +30,10 @@ MODULES         = driver/stdout driver/easygpio driver/ping user
 The HC-SR04 is a 5V device, so you will (at the very least) need a [voltage divider](http://elinux.org/RPi_GPIO_Interface_Circuits#Voltage_divider) on the echo pin.
 Or even better: [a logic level shifter.](http://elinux.org/RPi_GPIO_Interface_Circuits#Level_Shifters) 
 
-![Two pins](/doc/esp_circuit_two_pins.png)
+![Two pins](/doc/esp_circuit_twopins.png)
 ### single pin mode
 
-![Single pin mode](/doc/esp_circuit_one pin.png)
+![Single pin mode](/doc/esp_circuit_onepin.png)
 
 ~~If you want to run this in 'single pin mode' behind a logic level shifter you can connect the echo pin on the 3V3 side to the trigger GPIO via a 5KΩ resistor. That works for me at least~~. It used to work, but with another level shifter i can't get it to work anymore. I will investigate further. 
 
