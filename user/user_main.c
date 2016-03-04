@@ -41,7 +41,7 @@ loop(void) {
  */
 static void ICACHE_FLASH_ATTR
 setup(void) {
-  ping_init(&pingA, 2, 0, PING_MM); // trigger=GPIO0, echo=GPIO2, set the pins to the same value for one-pin-mode
+  ping_init(&pingA, 2, 0, PING_MM); // trigger=GPIO2, echo=GPIO0, set the pins to the same value for one-pin-mode
   ping_init(&pingB, 4, 5, PING_MM); // trigger=GPIO4, echo=GPIO5, set the pins to the same value for one-pin-mode
 
   // Start repeating loop timer
