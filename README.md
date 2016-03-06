@@ -35,9 +35,9 @@ Or even better: [a logic level shifter.](http://elinux.org/RPi_GPIO_Interface_Ci
 
 ![Single pin mode](/doc/esp_circuit_onepin.png)
 
-~~If you want to run this in 'single pin mode' behind a logic level shifter you can connect the echo pin on the 3V3 side to the trigger GPIO via a 5KΩ resistor. That works for me at least~~. It used to work, but with another level shifter i can't get it to work anymore. I will investigate further. 
+If you want to run this in 'single pin mode' behind a logic level shifter you can connect the echo pin on the 3V3 side to the trigger GPIO via a 5KΩ resistor. This works for a [a classic MOSFET level shifter.](http://elinux.org/RPi_GPIO_Interface_Circuits#Classic_MOSFET_level_shifter) built out of two BSS138 and four 10KΩ resistors. Wiring echo & trigger together on the 5V side does *not* work with a classic mosfet level shifter.
 
-Wiring echo & trigger together on the 5V side does *not* work.
+Another working solution is a voltage divider (5V to 3.3V) between HC-SR04 echo and ground. Connect HC-SR04 trigger and esp GPIO to the middle of the divider.
 
 
 ### other sensors
