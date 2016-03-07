@@ -37,7 +37,7 @@
 #include "os_type.h"
 
 #define PING_TRIGGER_DEFAULT_STATE 0
-#define PING_TRIGGER_LENGTH 5
+#define PING_TRIGGER_LENGTH 10 //  // Wait long enough for the sensor to realize the trigger pin is high. Sensor specs say to wait 10uS.
 #define PING_POLL_PERIOD 100 // 100 us, used when polling interrupt results
 
 static volatile uint32_t   ping_timeStamp0 = 0;
@@ -135,7 +135,13 @@ ping_pingUs(Ping_Data *pingData, uint32_t maxPeriod, uint32_t* response) {
   GPIO_OUTPUT_SET(triggerPin, 1);
   os_delay_us(PING_TRIGGER_LENGTH);
   GPIO_OUTPUT_SET(triggerPin, 0);
-
+  
+  if (echoPin == triggerPin) {
+    // force the trigger pin low for 50us. This helps stabilise echo pin when 
+    // running in single pin mode. 
+    os_delay_us(50);
+  }
+  
   GPIO_DIS_OUTPUT(echoPin);
   gpio_pin_intr_state_set(GPIO_ID_PIN(echoPin), GPIO_PIN_INTR_POSEDGE);
 
