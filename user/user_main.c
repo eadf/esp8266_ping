@@ -22,16 +22,16 @@ static Ping_Data pingB;
 void ICACHE_FLASH_ATTR
 loop(void) {
   float distance = 0;
-  float maxDistance = 2000; // 2 meter
+  float maxDistance = 3000; // 3 meter
   if (ping_ping(&pingA, maxDistance, &distance) ) {
     os_printf("A Response ~ %d mm \n", (int)distance);
   } else {
-    os_printf("Failed to get any response from sensor A.\n");
+    os_printf("Failed to get any response from sensor A. Is maxDistance set too low?\n");
   }
   if (ping_ping(&pingB, maxDistance, &distance) ) {
     os_printf("B Response ~ %d mm \n", (int)distance);
   } else {
-    os_printf("Failed to get any response from sensor B.\n");
+    os_printf("Failed to get any response from sensor B. Is maxDistance set too low?\n");
   }
 }
 
